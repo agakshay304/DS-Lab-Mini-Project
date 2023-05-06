@@ -12,12 +12,14 @@ from dotenv import load_dotenv
 
 load_dotenv(".env")
 USER_NAME = os.getenv("USER_NAME")
-PASSWORD = os.getenv("PASSWORD") 
+PASSWORD = os.getenv("PASSWORD")
 HOSTNAME = os.getenv("HOSTNAME")
 DB_NAME = os.getenv("DATABASE_NAME")
 
 # creating database
-def create_db(user_name, user_pass,host_name,db_name):
+
+
+def create_db(user_name, user_pass, host_name, db_name):
     try:
         mydb = mysql.connector.connect(
             host=host_name,
@@ -34,7 +36,7 @@ def create_db(user_name, user_pass,host_name,db_name):
         print(f"\nERROR : {e} occurred !\n")
 
 
-# 3 tables :- 
+# 3 tables :-
 # customers -> Stores info about customers
 # transactions -> Stores info about any credited/debited transactions
 # auth -> Stores customer's password  (you can use hashing to store it securely)
@@ -84,7 +86,7 @@ admin_passwd = 'root'
 
 # function to make a connection to MySql server
 # and connect to database
-def create_connection(user_name, user_pass, host_name,db_name):
+def create_connection(user_name, user_pass, host_name, db_name):
     connection = None
     try:
         connection = mysql.connector.connect(
@@ -135,6 +137,8 @@ def read_table(connection, table_name="", query=""):
         print(f"\nERROR : {e} occurred !\n")
 
 # function to authenticate admin/customer
+
+
 def authenticate(connection, level):
 
     usr_id = int(input("Enter your id : "))
@@ -145,7 +149,8 @@ def authenticate(connection, level):
             return True
 
     elif level == 'customer':
-        p = getDetail(connection, "auth",("acc_num", usr_id, 'int'), "password")
+        p = getDetail(connection, "auth",
+                      ("acc_num", usr_id, 'int'), "password")
         if pass_word == p:
             return True
     return False
@@ -157,13 +162,19 @@ def main_menu_admin(connection):
     auth = authenticate(connection, "admin")
     if auth == True:
         while True:
-            print('\n####### Main Menu #######')
-            print("\n1.  Open New Account")
-            print('\n2.  Update existing Account')
-            print('\n3.  Close existing Account')
-            print('\n4.  See all Customers details')
-            print('\n5.  See all Transactions details')
-            print('\n6.  Exit')
+            print("\n╔══════════════════════════════════════════════════╗")
+            print(
+                "║\033[1m\033[96m Welcome to the Admin Portal \033[0m\033[0m                     ║")
+            print("╠══════════════════════════════════════════════════╣")
+            print("║                                                  ║")
+            print("║            1. Open New Account                   ║")
+            print("║            2. Update Existing Account            ║")
+            print("║            3. Close Existing Account             ║")
+            print("║            4. See All Customers Details          ║")
+            print("║            5. See All Transactions Details       ║")
+            print("║            6. Exit                               ║")
+            print("║                                                  ║")
+            print("╚══════════════════════════════════════════════════╝")
 
             print('\n\n')
 
@@ -190,14 +201,17 @@ def main_menu_admin(connection):
 
 # function to handle operation available for customer
 def main_menu_customer(connection):
-    
+
     auth = authenticate(connection, "customer")
     if auth == True:
         while True:
-            print('\n####### Main Menu #######')
-            print('\n1.  Transaction Menu')
-            print('\n2.  Report Menu')
-            print('\n3.  Exit')
+            print("\n╔══════════════════════════════════════════════════╗")
+            print("║\033[1m\033[96m Welcome to the Customer Portal \033[0m\033[0m                  ║")
+            print("╠══════════════════════════════════════════════════╣")
+            print("║                                                  ║")
+            print("║            1. Transaction Menu                   ║")
+            print("║            2. Exit                               ║")
+            print("╚══════════════════════════════════════════════════╝")
             print('\n\n')
 
             choice = int(input())
@@ -205,8 +219,6 @@ def main_menu_customer(connection):
             if choice == 1:
                 transaction_menu(connection)
             elif choice == 2:
-                report_menu()
-            elif choice == 3:
                 break
             else:
                 print("\nInvalid Input !\n")
@@ -235,12 +247,13 @@ def add_new_account(connection):
     query_insert_new_account = '''INSERT INTO customers (f_name,l_name,aadhar_num,dob,city,area,
         pincode,phone_num,email_id,account_type,sms_banking,current_amount) VALUES (''' + \
         "'"+f_name+"'" + "," + "'"+l_name+"'" + "," + "'"+str(aadhar_num)+"'" + "," + \
-        "'"+dob+"'" + "," + "'"+addr_city+"'" + "," + "'"+addr_area+"'" + "," + "'"+addr_pincode+ \
+        "'"+dob+"'" + "," + "'"+addr_city+"'" + "," + "'"+addr_area+"'" + "," + "'"+addr_pincode + \
         "'" + "," + "'"+phone_num+"'" + "," + "'"+email_id+"'" + "," + "'"+account_type+"'" + \
         "," + "'"+sms_banking+"'" + "," + str(current_amount) + ");"
     status1 = execute_query(connection, query_insert_new_account)
 
-    acc_n = getDetail(connection, "customers",("aadhar_num", aadhar_num, 'str'), "acc_num")
+    acc_n = getDetail(connection, "customers",
+                      ("aadhar_num", aadhar_num, 'str'), "acc_num")
     query_insert_auth = "INSERT INTO auth (acc_num, password) VALUES (" + str(acc_n) + \
                         "," + "'" + str(password) + "'" + ");"
     status2 = execute_query(connection, query_insert_auth)
@@ -252,7 +265,8 @@ def add_new_account(connection):
 # function to update existing account details
 def update_account(connection):
     os.system('cls' if os.name == 'nt' else 'clear')
-    acc_num = int(input("Enter the account number whose details will be updated : "))
+    acc_num = int(
+        input("Enter the account number whose details will be updated : "))
     print("\nWhat do you want to update? ")
     print("\n1. First Name")
     print("\n2. Last Name")
@@ -298,7 +312,8 @@ def update_account(connection):
         new_data = input("Enter your new account type [Current/Saving] :  ")
     elif choice == 10:
         place = 'sms_banking'
-        new_data = input("Do you want to activate SMS Banking service ? [Y/N] ")
+        new_data = input(
+            "Do you want to activate SMS Banking service ? [Y/N] ")
     elif choice == 11:
         place = 'password'
         new_data = input("Enter your new password : ")
@@ -306,17 +321,17 @@ def update_account(connection):
         place = "aadhar_num"
         new_data = input("Enter your correct aadhar number : ")
 
-
     else:
         print("\nInvalid Input !\n")
-        
 
     if place == 'password':
         query_update_existing_account = "UPDATE auth SET " + place + " = " + \
-        "'" + str(new_data) + "'" + " WHERE  acc_num = " + str(acc_num) + ';'
-    else:        
+            "'" + str(new_data) + "'" + \
+            " WHERE  acc_num = " + str(acc_num) + ';'
+    else:
         query_update_existing_account = "UPDATE customers SET " + place + " = " + \
-        "'" + str(new_data) + "'" + " WHERE  acc_num = " + str(acc_num) + ';'
+            "'" + str(new_data) + "'" + \
+            " WHERE  acc_num = " + str(acc_num) + ';'
 
     status = execute_query(connection, query_update_existing_account)
     if status == 1:
@@ -324,9 +339,10 @@ def update_account(connection):
                         ("acc_num", acc_num, 'int'), "sms_banking")
         if sms == 'Y':
             try:
-                sendSMS(connection, acc_num, " updated " + " for "+place,0)
+                sendSMS(connection, acc_num, " updated " + " for "+place, 0)
             except:
-                print("\nCan't send sms report for this transaction. Kindly check your internet connection or mobile number !\n")
+                print(
+                    "\nCan't send sms report for this transaction. Kindly check your internet connection or mobile number !\n")
         print("\n***Record updated successfully...***\n")
 
 
@@ -342,7 +358,8 @@ def close_account(connection):
         str(acc_num) + ';'
     # add_to_deleted_tables(acc_num)
 
-    status = execute_query(connection, query_delete_authdata) and execute_query(connection, query_delete_transactiondata) and execute_query(connection, query_delete_accountdata) 
+    status = execute_query(connection, query_delete_authdata) and execute_query(
+        connection, query_delete_transactiondata) and execute_query(connection, query_delete_accountdata)
     if status == 1:
         print("\n***Record deleted successfully...***\n")
         print("\nSad to see you go, Come back soon!\n")
@@ -353,7 +370,7 @@ def sendSMS(connection, acc_num, cat, amount=0):
     account_sid = 'AC6d991f3907307971bb69e112e20d9219'
     auth_token = 'c01cbb7123c89e5ebdbfe21959116aae'
     to_num = '+91'+getDetail(connection, "customers",
-                       ("acc_num", acc_num, 'int'), "phone_num")
+                             ("acc_num", acc_num, 'int'), "phone_num")
     client = Client(account_sid, auth_token)
     f_name = getDetail(connection, "customers",
                        ("acc_num", acc_num, 'int'), "f_name")
@@ -363,10 +380,12 @@ def sendSMS(connection, acc_num, cat, amount=0):
         from_='+16075233189',
         body='Dear ' + str(f_name) + " " + str(l_name) + ', your account number ' +
         str(acc_num) + " is " + str(cat) + str(amount) + ".",
-        to= to_num
+        to=to_num
     )
 
 # function to tell if customer's account exists
+
+
 def doesAccountExist(connection, acc_num):
     query = 'SELECT * FROM customers WHERE acc_num = ' + str(acc_num) + ';'
 
@@ -383,7 +402,7 @@ def doesAccountExist(connection, acc_num):
         print(f"\n\nERROR : {e} occurred !\n\n")
 
 
-#function to get given detail from given table according to given condition
+# function to get given detail from given table according to given condition
 def getDetail(connection, table_name, cond, detail):  # ex- cond = ("acc_num",1,'int')
     if cond[2] == 'str':
         query = 'SELECT ' + detail + ' FROM ' + table_name + ' WHERE ' + \
@@ -414,7 +433,7 @@ def deposit_money(connection, acc_num):
         str(today)[:19] + "'" + ");"
 
     status = execute_query(connection, query_deposit_money) and execute_query(connection,
-                                                                query_insert_transactions)
+                                                                              query_insert_transactions)
 
     if status == 1:
         sms = getDetail(connection, "customers",
@@ -423,9 +442,9 @@ def deposit_money(connection, acc_num):
             try:
                 sendSMS(connection, acc_num, " credited with ", amount)
             except:
-                print("\nCan't send sms report for this transaction. Kindly check your internet connection or mobile number!\n")
+                print(
+                    "\nCan't send sms report for this transaction. Kindly check your internet connection or mobile number!\n")
         print("\n***Amount deposited successfully...***\n")
-
 
 
 def withdraw_money(connection, acc_num):
@@ -444,7 +463,7 @@ def withdraw_money(connection, acc_num):
             str(today)[:19] + "'" + ");"
 
         status = execute_query(connection, query_withdraw_money) and execute_query(connection,
-                                                                    query_insert_transactions)
+                                                                                   query_insert_transactions)
         if status == 1:
             playsound("Sounds/withdraw_sound.mp3")
             sms = getDetail(connection, "customers",
@@ -486,18 +505,11 @@ def transaction_menu(connection):
 
         elif choice == 3:
             print("Your current balance is : ₹", getDetail(connection,
-                  "customers", ("acc_num", acc_num, 'int'), "current_amount"))
+                                                           "customers", ("acc_num", acc_num, 'int'), "current_amount"))
 
         elif choice == 4:
             break
 
-
-def report_menu():
-    # coming soon...
-    pass
-
-
-# driver code
 
 # creating database and initiating connection
 host_name = input("Enter hostname : ") or HOSTNAME
@@ -505,27 +517,37 @@ user_name = input("Enter username : ") or USER_NAME
 user_pass = getpass("Enter user password : ") or PASSWORD
 db_name = input("Enter the name of database : ") or DB_NAME
 print(user_pass, user_name, host_name, db_name)
-status = create_db(user_name, user_pass,host_name,db_name)
+status = create_db(user_name, user_pass, host_name, db_name)
 if status == 1:
     print("\nDatabase is ready.\n\n")
 
 
-connection = create_connection(user_name,user_pass,host_name,db_name)
+connection = create_connection(user_name, user_pass, host_name, db_name)
 
 # creating required tables
-status = execute_query(connection, query_create_table_customers) and execute_query(connection, 
-         query_create_table_transactions) and execute_query(connection, query_create_table_auth)
-         
-if status == 1:
-    print("\nTables are initalized. You are ready to go...\n\n")
+status = execute_query(connection, query_create_table_customers) and execute_query(connection,
+                                                                                   query_create_table_transactions) and execute_query(connection, query_create_table_auth)
 
-print("\n####### Login Panel #######\n\n")
-print("1. Admin Login\n2. Customer Login\n")
+if status == 1:
+    print("\n#################################################")
+    print("##        Tables Initialized - Ready to Go      ##")
+    print("#################################################\n\n")
+
+
+print("╔═══════════════════════════════════════════════╗")
+print("║                  \033[1m\033[96m Login Panel \033[0m\033[0m                ║")
+print("║                                               ║")
+print("║    1. Admin Login                             ║")
+print("║    2. Customer Login                          ║")
+print("║                                               ║")
+print("╚═══════════════════════════════════════════════╝")
 choice = int(input())
 
 if choice == 1:
+    os.system('cls' if os.name == 'nt' else 'clear')
     main_menu_admin(connection)
 elif choice == 2:
+    os.system('cls' if os.name == 'nt' else 'clear')
     main_menu_customer(connection)
 else:
     print("\nInvalid Input !\n")
