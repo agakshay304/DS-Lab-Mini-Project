@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS transactions(
     PRIMARY KEY(trans_id),
     FOREIGN KEY (acc_num) REFERENCES customers(acc_num)
 );'''
-
+# all query for transaction
 # query to create auth table
 query_create_table_auth = '''
 CREATE TABLE IF NOT EXISTS auth(
